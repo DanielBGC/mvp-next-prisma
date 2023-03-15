@@ -1,11 +1,30 @@
-import { useSession, signOut } from 'next-auth/react'
+import { useSession, signOut, getSession } from 'next-auth/react'
 import styles from '../styles/Home.module.css'
-import useRequiredAuth from '@/lib/useRequiredAuth';
+// import useRequiredAuth from '@/lib/useRequiredAuth';
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if(!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false
+      }
+    }
+  }
+
+  return {
+    props: {
+      session,
+    }
+  }
+}
 
 export default function Home() {
 
-  // const { data: session } = useSession();
-  const session = useRequiredAuth();
+  const { data: session } = useSession();
+
   if(!session) {
     return(<div>Loading...</div>)
   }
